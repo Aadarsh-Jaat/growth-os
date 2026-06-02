@@ -337,19 +337,88 @@ export default function DailyPlanner() {
 
       {/* Tasks List */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
-        <div className="p-5 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Today's Tasks</h2>
-          <button
-            onClick={() => {
-              setEditingTask(null);
-              setShowModal(true);
-            }}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-          >
-            <Plus size={18} />
-            <span>Add Task</span>
-          </button>
-        </div>
+      <div className="p-5 border-b border-gray-200 dark:border-gray-700">
+  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Today's Tasks</h2>
+    <div className="flex gap-2">
+      {/* Generate Fixed Tasks Button */}
+      <button
+        onClick={async () => {
+          if (!currentUser) return;
+          try {
+            // Fetch active fixed tasks
+            const fixedTasksQuery = query(
+              collection(db, 'fixedTasks'),
+              where('userId', '==', currentUser.uid),
+              where('active', '==', true)
+            );
+            const snapshot = await getDocs(fixedTasksQuery);
+            const today = new Date().toISOString().split('T')[0];
+            let addedCount = 0;
+            
+            for (const doc of snapshot.docs) {
+              const task = doc.data();
+              
+              // Check if task already exists for today
+              const existingQuery = query(
+                collection(db, 'tasks'),
+                where('userId', '==', currentUser.uid),
+                where('title', '==', task.title),
+                where('date', '==', today)
+              );
+              const existing = await getDocs(existingQuery);
+              
+              if (existing.empty) {
+                await addDoc(collection(db, 'tasks'), {
+                  title: task.title,
+                  category: task.category || 'Personal Work',
+                  priority: task.priority || 'medium',
+                  estimatedTime: task.estimatedTime || '',
+                  notes: `🔄 Fixed task - ${task.targetTime ? `Target time: ${task.targetTime}` : 'Complete today!'}`,
+                  status: 'pending',
+                  date: today,
+                  userId: currentUser.uid,
+                  isFixedTask: true,
+                  fixedTaskId: task.id,
+                  createdAt: new Date()
+                });
+                addedCount++;
+              }
+            }
+            
+            if (addedCount > 0) {
+              alert(`✅ ${addedCount} fixed tasks added for today!`);
+              fetchTasks(); // Refresh the task list
+            } else {
+              alert(`📋 All fixed tasks are already in your today's list.`);
+            }
+          } catch (error) {
+            console.error('Error generating fixed tasks:', error);
+            alert('Failed to generate fixed tasks: ' + error.message);
+          }
+        }}
+        className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+        </svg>
+        <span>Generate Fixed</span>
+      </button>
+      
+      {/* Existing Add Task Button */}
+      <button
+        onClick={() => {
+          setEditingTask(null);
+          setShowModal(true);
+        }}
+        className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+      >
+        <Plus size={18} />
+        <span>Add Task</span>
+      </button>
+    </div>
+  </div>
+</div>
 
         <div className="divide-y divide-gray-200 dark:divide-gray-700">
           {tasks.length === 0 ? (

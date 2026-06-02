@@ -28,6 +28,7 @@ import {
   Moon,
   Sun,
   TrendingDown,
+  Clock,
   PiggyBank
 } from 'lucide-react';
 
@@ -35,6 +36,7 @@ const menuItems = [
   { path: '/app/dashboard', icon: LayoutDashboard, label: 'Dashboard', color: 'text-blue-500' },
   { path: '/app/daily-planner', icon: CalendarCheck, label: 'Daily Planner', color: 'text-green-500' },
   { path: '/app/habits', icon: Activity, label: 'Habit Tracker', color: 'text-purple-500' },
+  { path: '/app/fixed-tasks', icon: Clock, label: 'Fixed Tasks', color: 'text-teal-500' },
   { divider: true },
   { path: '/app/fitness', icon: Dumbbell, label: 'Fitness', color: 'text-orange-500' },
   { path: '/app/english', icon: Languages, label: 'English / IELTS', color: 'text-indigo-500' },

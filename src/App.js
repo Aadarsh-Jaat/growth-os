@@ -36,6 +36,7 @@ import WeeklyReview from './pages/WeeklyReview';
 import MonthlyReview from './pages/MonthlyReview';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
+import FixedTasksManager from './components/FixedTasksManager';
 import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
@@ -57,6 +58,7 @@ function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="daily-planner" element={<DailyPlanner />} />
               <Route path="habits" element={<HabitTracker />} />
+              <Route path="fixed-tasks" element={<FixedTasksManager />} />
               <Route path="fitness" element={<Fitness />} />
               <Route path="english" element={<English />} />
               <Route path="career" element={<Career />} />
